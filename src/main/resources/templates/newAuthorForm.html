@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Author!</title>
+</head>
+<body>
+<form action='/author/new' method='POST'>
+    <label>First Name: <input th:field="${author.firstName}"></label><br />
+    <p th:errors="${author.firstName}"></p>
+    <label>Last Name: <input th:field="${author.lastName}"></label><br />
+    <p th:errors="${author.lastName}"></p>
+    <br/>
+    <input type='submit'>
+</form>
