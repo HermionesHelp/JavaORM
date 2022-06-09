@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.GeneratedValue;
+
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "/book")
@@ -42,7 +40,7 @@ public class BookController {
     @PostMapping(value = "/new")
     public String addBook(@ModelAttribute @Valid Book newBook, Errors errors, Model model) {
 
-        if (errors.hasErrors()){
+        if (errors.hasErrors()) {
             return "newBooKForm";
         }
 
@@ -51,6 +49,18 @@ public class BookController {
         return "bookAdded";
     }
 
+    @GetMapping(value = "/{bookId}")
+    public String getBookById(@PathVariable int bookId, Model model) {
+        Optional<Book> maybeBook = bookRepository.findById(bookId);
 
+        if (maybeBook.isEmpty()) {
+            model.addAttribute("book", "not found");
+            return "book-by-id";
+        }
 
+        Book foundBook = maybeBook.get();
+        model.addAttribute("book", foundBook);
+
+        return "book-by-id";
+    }
 }
