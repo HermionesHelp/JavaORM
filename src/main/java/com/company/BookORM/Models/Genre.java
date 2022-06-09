@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -18,14 +19,12 @@ public class Genre{
     @ManyToMany(mappedBy = "genres")
     public List<Book> books;
 
-    // custom method to add a new book to the book list
-    public void addBook(Book book){
-        books.add(book);
-    }
-
+    // The only constructor we need is an empty one for Hibernate to make an instance.
+    // We will need getters and setters in order to complete the creation of objects.
     public Genre() {
     }
 
+//    Getters and Setters
     public int getId() {
         return id;
     }
@@ -50,7 +49,13 @@ public class Genre{
         return books;
     }
 
+    //    Only need a getter for the books list
     public void setBooks(List<Book> books) {
         this.books = books;
+    }
+
+    // custom method to add a new book to the book list
+    public void addBook(Book book){
+        books.add(book);
     }
 }

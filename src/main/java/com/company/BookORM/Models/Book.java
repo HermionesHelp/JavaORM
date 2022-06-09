@@ -11,7 +11,6 @@ public class Book {
     @GeneratedValue
     private int id;
 
-    @NotBlank(message = "Book must have a Title")
     private String title;
 
     @ManyToOne
@@ -23,7 +22,18 @@ public class Book {
     @ManyToMany
     private List<Genre> genres;
 
+    // The only constructor we need is an empty one for Hibernate to make an instance.
+    // We will need getters and setters in order to complete the creation of objects.
     public Book() {
+    }
+
+//    Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -56,14 +66,6 @@ public class Book {
 
     public void setGenres(List<Genre> genres) {
         this.genres = genres;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     //custom method to add a genre to the current list of genres for a book

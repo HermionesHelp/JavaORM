@@ -13,29 +13,23 @@ public class Author{
     @Id
     @GeneratedValue
     private int id;
-
-//    @NotBlank(message = "Please enter first name.")
     private String firstName;
-
-//    @NotBlank(message = "Please enter last name.")
     private String lastName;
 
     @OneToMany(mappedBy = "author")
     public List<Book> books;
 
+    // The only constructor we need is an empty one for Hibernate to make an instance.
+    // We will need getters and setters in order to complete the creation of objects.
     public Author() {
     }
-
 
 //    custom method to return the name in a format that we prefer for the application
     public String getFullName(){
         return this.lastName + ", " + this.firstName;
     }
 
-    public List<Book> getBooks() {
-        return books;
-    }
-
+//    Getters and Setters
     public int getId() {
         return id;
     }
@@ -58,5 +52,10 @@ public class Author{
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+//    Only need a getter for the books list
+    public List<Book> getBooks() {
+        return books;
     }
 }
