@@ -1,9 +1,17 @@
 package com.company.BookORM.Models;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import java.util.List;
 
-public class Genre extends AbstractEntity{
+@Entity
+public class Genre{
+
+    @Id
+    @GeneratedValue
+    private int id;
 
     private String type;
 
@@ -16,6 +24,14 @@ public class Genre extends AbstractEntity{
     }
 
     public Genre() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Genre(String type) {

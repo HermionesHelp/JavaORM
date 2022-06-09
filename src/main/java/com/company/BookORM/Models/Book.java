@@ -5,7 +5,11 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
-public class Book extends AbstractEntity{
+public class Book {
+
+    @Id
+    @GeneratedValue
+    private int id;
 
     @NotBlank(message = "Book must have a Title")
     private String title;
@@ -20,13 +24,6 @@ public class Book extends AbstractEntity{
     private List<Genre> genres;
 
     public Book() {
-    }
-
-    public Book(String title, Author author, ISBN isbn, List<Genre> genres) {
-        this.title = title;
-        this.author = author;
-        this.isbn = isbn;
-        this.genres = genres;
     }
 
     public String getTitle() {
@@ -53,13 +50,20 @@ public class Book extends AbstractEntity{
         this.isbn = isbn;
     }
 
-
     public List<Genre> getGenres() {
         return genres;
     }
 
     public void setGenres(List<Genre> genres) {
         this.genres = genres;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     //custom method to add a genre to the current list of genres for a book

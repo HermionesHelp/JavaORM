@@ -19,6 +19,7 @@ public class AuthorController {
 
     @Autowired
     private AuthorRepository authorRepository;
+
     public ArrayList<Author> getAllAuthors() {
         ArrayList<Author> authors = new ArrayList<>();
         for(Author author : authorRepository.findAll()) {
@@ -34,12 +35,7 @@ public class AuthorController {
     }
 
     @PostMapping
-    public String createAuthor(@ModelAttribute @Valid Author newAuthor, Errors errors, Model model) {
-
-        if (errors.hasErrors()){
-            return "newBookForm";
-        }
-
+    public String createAuthor(Author newAuthor, Model model) {
         authorRepository.save(newAuthor);
         model.addAttribute("authors", this.getAllAuthors());
         return "authors";

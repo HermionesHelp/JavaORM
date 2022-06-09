@@ -1,8 +1,16 @@
 package com.company.BookORM.Models;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-public class ISBN extends AbstractEntity{
+@Entity
+public class ISBN {
+
+    @Id
+    @GeneratedValue
+    private int id;
 
     private String number;
     private String country;
@@ -19,6 +27,14 @@ public class ISBN extends AbstractEntity{
     private Book book;
 
     public ISBN() {}
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getNumber() {
         return number;

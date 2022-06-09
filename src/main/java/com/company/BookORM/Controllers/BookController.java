@@ -1,8 +1,13 @@
 package com.company.BookORM.Controllers;
 
+import com.company.BookORM.Models.Author;
 import com.company.BookORM.Models.Book;
+import com.company.BookORM.Models.Genre;
+import com.company.BookORM.Models.ISBN;
 import com.company.BookORM.dataRepositories.AuthorRepository;
 import com.company.BookORM.dataRepositories.BookRepository;
+import com.company.BookORM.dataRepositories.GenreRepository;
+import com.company.BookORM.dataRepositories.ISBNRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,56 +16,131 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.GeneratedValue;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Controller
-@RequestMapping(value = "/book")
+@RequestMapping(value = "books")
 public class BookController {
 
     @Autowired
-    private BookRepository bookRepository;
+    BookRepository bookRepository;
+
     @Autowired
-    private AuthorRepository authorRepository;
+    AuthorRepository authorRepository;
 
-    @GetMapping
-    public String getBooks(Model model) {
-        model.addAttribute("books", bookRepository.findAll());
-        return "bookList";
-    }
+    @Autowired
+    ISBNRepository isbnRepository;
 
-    // GET /book/new -> returns an HTML form
-    @GetMapping(value = "/new")
-    public String addBookForm(Model model) {
-        model.addAttribute(new Book());
-        model.addAttribute("authors", authorRepository.findAll());
-        return "newBookForm";
-    }
+    @Autowired
+    GenreRepository genreRepository;
 
-    // POST /book/new
-    @PostMapping(value = "/new")
-    public String addBook(@ModelAttribute @Valid Book newBook, Errors errors, Model model) {
+    @PostMapping(value = "/{bookId}")
+    public String addBookGenreById(@PathVariable int bookId, @RequestParam int genreId, Model model) {
+        // get the book by bookId
+        Optional<Book> maybeBook = bookRepository.findById(bookId);
 
-        if (errors.hasErrors()){
-            return "newBooKForm";
+        // check that the book exists:
+        if(maybeBook.isEmpty()) {
+            return "book-by-id";
         }
+        // unpack the book
+        Book theBook = maybeBook.get();
 
-        bookRepository.save(newBook);
-        model.addAttribute("bookName", newBook.getTitle());
-        return "bookAdded";
+        // get the genre by genreId
+        Optional<Genre> maybeGenre = genreRepository.findById(genreId);
+
+        // check that the genre exists:
+        if(maybeGenre.isEmpty()) {
+            return "book-by-id";
+        }
+        // unpack the genre:
+        Genre theGenre = maybeGenre.get();
+
+        // add the genre to the book
+        theBook.addGenre(theGenre);
+
+        // add the book to the genre
+        theGenre.addBook(theBook);
+
+        // save them
+        bookRepository.save(theBook);
+        genreRepository.save(theGenre);
+
+        ArrayList<Genre> allGenres = new ArrayList<>();
+        for(Genre genre : genreRepository.findAll()) {
+            allGenres.add(genre);
+        }
+        model.addAttribute("book", theBook);
+        model.addAttribute("allGenres", allGenres);
+        return "book-by-id";
     }
 
     @GetMapping(value = "/{bookId}")
-    public String getBookById(@PathVariable int bookId, Model model){
+    public String getBookById(@PathVariable int bookId, Model model) {
         Optional<Book> maybeBook = bookRepository.findById(bookId);
-
-        if(maybeBook.isEmpty()){
+        if(maybeBook.isEmpty()) {
             model.addAttribute("book", "not found");
             return "book-by-id";
         }
-
         Book foundBook = maybeBook.get();
+        ArrayList<Genre> allGenres = new ArrayList<>();
+        for(Genre genre : genreRepository.findAll()) {
+            allGenres.add(genre);
+        }
         model.addAttribute("book", foundBook);
+        model.addAttribute("allGenres", allGenres);
 
         return "book-by-id";
+    }
+
+    @GetMapping
+    public String getBooks(Model model) {
+        ArrayList<Book> bookList = new ArrayList<>();
+        for(Book book : bookRepository.findAll()) {
+            bookList.add(book);
+        }
+        ArrayList<Author> authorList = new ArrayList<>();
+        for(Author author : authorRepository.findAll()) {
+            authorList.add(author);
+        }
+        ArrayList<ISBN> unregisteredIsbns = new ArrayList<ISBN>();
+        for(ISBN isbn : isbnRepository.findAll()) {
+            if(isbn.getBook() == null) {
+                unregisteredIsbns.add(isbn);
+            }
+        }
+        model.addAttribute("books", bookList);
+        model.addAttribute("authors", authorList);
+        model.addAttribute("unregisteredIsbns", unregisteredIsbns);
+        return "books";
+    }
+
+    @PostMapping
+    public String createBook(Book newBook, Model model) {
+        // we save the book like normal
+        bookRepository.save(newBook);
+        // we have to update the isbn as well because it needs to track the id of the book.
+        ISBN isbnUpdate = isbnRepository.findById(newBook.getIsbn().getId()).get();
+        isbnUpdate.setBook(newBook);
+        isbnRepository.save(isbnUpdate);
+        ArrayList<Book> bookList = new ArrayList<>();
+        for(Book book : bookRepository.findAll()) {
+            bookList.add(book);
+        }
+        ArrayList<Author> authorList = new ArrayList<>();
+        for(Author author : authorRepository.findAll()) {
+            authorList.add(author);
+        }
+        ArrayList<ISBN> unregisteredIsbns = new ArrayList<ISBN>();
+        for(ISBN isbn : isbnRepository.findAll()) {
+            if(isbn.getBook() == null) {
+                unregisteredIsbns.add(isbn);
+            }
+        }
+        model.addAttribute("books", bookList);
+        model.addAttribute("authors", authorList);
+        model.addAttribute("unregisteredIsbns", unregisteredIsbns);
+        return "books";
     }
 }
