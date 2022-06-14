@@ -14,8 +14,14 @@ public class Book {
     private int id;
 
     private String title;
+
+    // This will become a Many-to-One relationship
     private Author author;
+
+    // This will become a One-to-One relationship
     private ISBN isbn;
+
+    // This will become a Many-to-Many relationship
     private List<Genre> genres;
 
     // The only constructor we need is an empty one for Hibernate to make an instance.
